@@ -9,6 +9,46 @@ class ConversorPage extends StatefulWidget {
 }
 
 class _ConversorPageState extends State<ConversorPage> {
+  final TextEditingController realController = TextEditingController();
+  final TextEditingController dolarController = TextEditingController();
+  final TextEditingController euroController = TextEditingController();
+
+  double euro = 0;
+  double dolar = 0;
+
+  void realChanged(String text) {
+    if (text != '') {
+      double real = double.parse(text);
+      dolarController.text = (real / dolar).toStringAsFixed(2);
+      euroController.text = (real / euro).toStringAsFixed(2);
+    } else {
+      dolarController.clear();
+      euroController.clear();
+    }
+  }
+
+  void dolarChanged(String text) {
+    if (text != '') {
+      double dolar = double.parse(text);
+      realController.text = (dolar * this.dolar).toStringAsFixed(2);
+      euroController.text = (dolar * this.dolar / euro).toStringAsFixed(2);
+    } else {
+      realController.clear();
+      euroController.clear();
+    }
+  }
+
+  void euroChanged(String text) {
+    if (text != '') {
+      double euro = double.parse(text);
+      realController.text = (euro * this.euro).toStringAsFixed(2);
+      dolarController.text = (euro * this.euro / euro).toStringAsFixed(2);
+    } else {
+      realController.clear();
+      dolarController.clear();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,14 +82,28 @@ class _ConversorPageState extends State<ConversorPage> {
                   ),
                 );
               } else {
-                return const Center(
-                  child: Text(
-                    'Funcionou',
-                    style: TextStyle(
-                      fontSize: 25,
-                      color: Colors.amber,
-                    ),
-                    textAlign: TextAlign.center,
+                dolar = snapshot.data?['results']['currencies']['USD']['buy'];
+                euro = snapshot.data?['results']['currencies']['EUR']['buy'];
+
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      const Icon(
+                        Icons.monetization_on,
+                        color: Colors.amber,
+                        size: 128,
+                      ),
+                      const Divider(),
+                      buildTextField(
+                          'Reais', 'R\$', realController, realChanged),
+                      const Divider(),
+                      buildTextField(
+                          'Dólares', 'USD\$', dolarController, dolarChanged),
+                      const Divider(),
+                      buildTextField('Euros', '€', euroController, euroChanged),
+                    ],
                   ),
                 );
               }
@@ -58,4 +112,25 @@ class _ConversorPageState extends State<ConversorPage> {
       ),
     );
   }
+}
+
+Widget buildTextField(
+  String label,
+  String prefix,
+  TextEditingController controller,
+  Function function,
+) {
+  return TextField(
+    controller: controller,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Colors.amber),
+      prefixText: prefix,
+    ),
+    style: const TextStyle(
+      color: Colors.amber,
+    ),
+    onChanged: (value) => function(value),
+    keyboardType: TextInputType.number,
+  );
 }

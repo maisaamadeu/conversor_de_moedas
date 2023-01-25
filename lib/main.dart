@@ -10,8 +10,29 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: ConversorPage(),
+    return MaterialApp(
+      theme: ThemeData(
+        hintColor: Colors.amber,
+        primaryColor: Colors.amber,
+        inputDecorationTheme: InputDecorationTheme(
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(
+              color: Colors.white,
+            ),
+            borderRadius: BorderRadius.circular(50),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(
+              color: Colors.amber,
+            ),
+            borderRadius: BorderRadius.circular(50),
+          ),
+          hintStyle: TextStyle(
+            color: Colors.amber,
+          ),
+        ),
+      ),
+      home: const ConversorPage(),
     );
   }
 }
